@@ -5,24 +5,38 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-#include <thread>
 #include <random>
-#include <cmath>
+
 #include <sound_generator.h>
 
 const int WINDOW_WIDTH = sf::VideoMode::getDesktopMode().width;
-const int WINDOW_HEIGHT = sf::VideoMode::getDesktopMode().height;
-const int BAR_WIDTH = 10;
+const int WINDOW_HEIGHT = sf::VideoMode::getDesktopMode().height - 200;
+const int NUM_BARS = 100;
 const int MSEC = 5;
+const int BAR_WIDTH = WINDOW_WIDTH / NUM_BARS;
 
 
-// Drawing utility function
+/**
+ * @brief Draws bars representing values on the SFML window.
+ *
+ * Each bar represents a value in the `values` vector, with optional highlights
+ * for elements being swapped or compared.
+ *
+ * @param window The SFML RenderWindow where bars are drawn.
+ * @param values A vector of integers representing the heights of each bar.
+ * @param highlight1 The index of the first element to highlight (default: -1).
+ * @param highlight2 The index of the second element to highlight (default: -1).
+ */
 void drawBars(sf::RenderWindow& window, const std::vector<int>& values, int highlight1 = -1, int highlight2 = -1) {
     window.clear(sf::Color::Black);
 
+    // Find the maximum value in values for height scaling
+    int maxValue = *std::max_element(values.begin(), values.end());
+    float heightScale = static_cast<float>(WINDOW_HEIGHT) / maxValue;
+
     for (size_t i = 0; i < values.size(); ++i) {
-        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH, values[i]));
-        bar.setPosition(i * BAR_WIDTH, (WINDOW_HEIGHT - values[i]));
+        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH - 1, values[i] * heightScale)); // Leave a small gap between bars
+        bar.setPosition(i * BAR_WIDTH, WINDOW_HEIGHT - (values[i] * heightScale));
 
         if (i == highlight1 || i == highlight2) {
             bar.setFillColor(sf::Color::Red);  // Highlight elements being swapped
@@ -36,22 +50,48 @@ void drawBars(sf::RenderWindow& window, const std::vector<int>& values, int high
     window.display();
 }
 
+/**
+ * @brief Draws bars representing values on the SFML window after sorting.
+ *
+ * Each bar represents a value in the `values` vector, with highlights
+ * for elements being sorted or not.
+ *
+ * @param values A vector of integers representing the heights of each bar.
+ * @param window The SFML RenderWindow where bars are drawn.
+ * @param soundGen 
+ * @param highlight1 The index of the first element to highlight (default: -1).
+ * @param highlight2 The index of the second element to highlight (default: -1).
+ */
 void finishSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen,int highlight1 = -1, int highlight2 = -1){
+    int maxValue = *std::max_element(values.begin(), values.end());
+    float heightScale = static_cast<float>(WINDOW_HEIGHT) / maxValue;
     for (size_t i = 0; i < values.size(); ++i) {
-        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH, values[i]));
-        bar.setPosition(i * BAR_WIDTH, (WINDOW_HEIGHT - values[i]));
-        if (i == highlight1 || i == highlight2) {
-            bar.setFillColor(sf::Color::Red);  // Highlight elements being swapped
+        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH - 1, values[i] * heightScale)); // Leave a small gap between bars
+        bar.setPosition(i * BAR_WIDTH, WINDOW_HEIGHT - (values[i] * heightScale));
+        if (highlight1 >= i){
+            bar.setFillColor(sf::Color::Green);  // Highlight corretly sorted 
         } else {
             bar.setFillColor(sf::Color::White); // Normal bar color
         }
-        bar.setFillColor(sf::Color::Green);  // Highlight corretly sorted 
         window.draw(bar);
-        soundGen.playSoundForValue(values[i]);
     }
     window.display();
 }
 
+/**
+ * @brief Sorts the vector `values` using the Bubble Sort algorithm with visualization.
+ *
+ * This function sorts the given vector `values` by iteratively comparing adjacent elements
+ * and swapping them if needed. The algorithm provides real-time visual feedback on the SFML
+ * window and plays corresponding sounds for each swap.
+ *
+ * @param values The vector of integers to sort.
+ * @param window The SFML window where the sorting visualization is displayed.
+ * @param soundGen The SoundGenerator object that plays sound feedback.
+ *
+ * @note This function uses a `bool` flag to detect if no swaps occurred in an iteration,
+ *       allowing early exit when the vector is already sorted.
+ */
 void bubbleSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen) {
     bool swapped;
     for (size_t i = 0; i < values.size(); ++i) {
@@ -63,7 +103,7 @@ void bubbleSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerato
                 swapped = true;
                 
                 // Small delay to make visualization slower
-                // sf::sleep(sf::milliseconds(10));
+                sf::sleep(sf::milliseconds(MSEC));
             }
         }
         
@@ -72,7 +112,12 @@ void bubbleSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerato
             break;
         }
     }
-    finishSort(values,window,soundGen);
+    for (size_t i = 0; i < values.size(); i++)
+   {
+        finishSort(values,window,soundGen,i, i);
+        soundGen.playSoundForValue(values[i]);
+        sf::sleep(sf::milliseconds(MSEC));
+   }
 }
 
 void selectionSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen) {
@@ -93,12 +138,11 @@ void selectionSort(std::vector<int> values, sf::RenderWindow& window, SoundGener
         sf::sleep(sf::milliseconds(MSEC));
     }
     for (size_t i = 0; i < values.size(); i++)
-    {
-        drawBars(window, values, i, i);
+   {
+        finishSort(values,window,soundGen,i, i);
         soundGen.playSoundForValue(values[i]);
         sf::sleep(sf::milliseconds(MSEC));
-    }
-    finishSort(values,window,soundGen);
+   }
 }
 
 void insertionSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen){
@@ -119,24 +163,30 @@ void insertionSort(std::vector<int> values, sf::RenderWindow& window, SoundGener
    }
    for (size_t i = 0; i < values.size(); i++)
    {
-        drawBars(window, values, i, i);
+        finishSort(values,window,soundGen,i, i);
         soundGen.playSoundForValue(values[i]);
         sf::sleep(sf::milliseconds(MSEC));
    }
-   
-   finishSort(values,window,soundGen);
 }
 
+/**
+ * @brief Main entry point for the sorting visualization program.
+ *
+ * Initializes the window, generates a random set of values, and calls a sorting
+ * algorithm with real-time visualization and sound playback.
+ *
+ * @return int Status code, 0 for successful execution.
+ */
 int main() {
     // Initialize values with random heights for visualization
-    std::vector<int> values(WINDOW_WIDTH / BAR_WIDTH);
+    std::vector<int> values(NUM_BARS);
 
     // Create the window first
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Visualised Sorts");
 
     // Fill with values from WINDOW_HEIGHT down to 0
-    for (int i = 0; i < values.size(); ++i) {
-        values[i] = WINDOW_HEIGHT - i;
+    for (int i = 1; i < values.size(); ++i) {
+        values[i] = i;
     }
 
     // Shuffle the values
@@ -148,12 +198,11 @@ int main() {
     SoundGenerator soundGen;
     soundGen.initializeSoundBuffers(WINDOW_HEIGHT);
 
-    // // // Run the visualised sorting algorithms
-    // bubbleSort(values, window, soundGen);
+    // Run the visualised sorting algorithms
+    bubbleSort(values, window, soundGen);
 
-    // // // Reset window and create new shuffled values for selection sort
-    // std::shuffle(values.begin(), values.end(), g);
-    // selectionSort(values, window, soundGen);
+    // Reset window and create new shuffled values for selection sort
+    selectionSort(values, window, soundGen);
 
     insertionSort(values, window, soundGen);
 
