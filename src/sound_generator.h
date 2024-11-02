@@ -9,17 +9,20 @@ class SoundGenerator {
 private:
     std::vector<sf::SoundBuffer> soundBuffers;
     sf::Sound sound;
+    float lastPlayTime;
+    const float MIN_TIME_BETWEEN_SOUNDS = 0.05f; // 50ms minimum between sounds
+    sf::Clock clock;
 
-    // Private helper methods
-    sf::SoundBuffer createPitchedSound(float baseFrequency, float amplitude = 0.5f, float duration = 0.1f);
+    sf::SoundBuffer createPitchedSound(float baseFrequency, float amplitude = 0.5f, float duration = 0.05f);
     float mapValueToFrequency(int value, int maxValue, float minFreq = 220.0f, float maxFreq = 880.0f);
 
 public:
-    // Initialize sound buffers for all possible values
+    SoundGenerator();
+    ~SoundGenerator();
     void initializeSoundBuffers(int maxValue);
-
-    // Play sound for a specific value
     void playSoundForValue(int value);
+    void stop(); // Add a method to stop current sound
+    void cleanup(); // Add cleanup method
 };
 
 #endif // SOUND_GENERATOR_H

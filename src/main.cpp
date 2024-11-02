@@ -12,7 +12,7 @@
 const int WINDOW_WIDTH = sf::VideoMode::getDesktopMode().width;
 const int WINDOW_HEIGHT = sf::VideoMode::getDesktopMode().height - 200;
 const int NUM_BARS = 100;
-const int MSEC = 5;
+const int MSEC = 20;
 const int BAR_WIDTH = WINDOW_WIDTH / NUM_BARS;
 
 
@@ -62,7 +62,7 @@ void drawBars(sf::RenderWindow& window, const std::vector<int>& values, int high
  * @param highlight1 The index of the first element to highlight (default: -1).
  * @param highlight2 The index of the second element to highlight (default: -1).
  */
-void finishSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen,int highlight1 = -1, int highlight2 = -1){
+void finishAnimation(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen,int highlight1 = -1, int highlight2 = -1){
     int maxValue = *std::max_element(values.begin(), values.end());
     float heightScale = static_cast<float>(WINDOW_HEIGHT) / maxValue;
     for (size_t i = 0; i < values.size(); ++i) {
@@ -76,6 +76,15 @@ void finishSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerato
         window.draw(bar);
     }
     window.display();
+}
+
+void finishSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen){
+    for (size_t i = 0; i < values.size(); i++)
+   {
+        finishAnimation(values,window,soundGen,i, i);
+        soundGen.playSoundForValue(values[i]);
+        sf::sleep(sf::milliseconds(MSEC));
+   }
 }
 
 /**
@@ -92,7 +101,7 @@ void finishSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerato
  * @note This function uses a `bool` flag to detect if no swaps occurred in an iteration,
  *       allowing early exit when the vector is already sorted.
  */
-void bubbleSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen) {
+void bubbleSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen) {
     bool swapped;
     for (size_t i = 0; i < values.size(); ++i) {
         for (size_t j = 0; j < values.size() - i - 1; ++j) {
@@ -112,15 +121,9 @@ void bubbleSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerato
             break;
         }
     }
-    for (size_t i = 0; i < values.size(); i++)
-   {
-        finishSort(values,window,soundGen,i, i);
-        soundGen.playSoundForValue(values[i]);
-        sf::sleep(sf::milliseconds(MSEC));
-   }
 }
 
-void selectionSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen) {
+void selectionSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen) {
     for (size_t i = 0; i < values.size(); i++) {
         int min_index = i;
         for (size_t j = i + 1; j < values.size(); j++) {
@@ -137,15 +140,9 @@ void selectionSort(std::vector<int> values, sf::RenderWindow& window, SoundGener
         // Small delay to make visualization slower
         sf::sleep(sf::milliseconds(MSEC));
     }
-    for (size_t i = 0; i < values.size(); i++)
-   {
-        finishSort(values,window,soundGen,i, i);
-        soundGen.playSoundForValue(values[i]);
-        sf::sleep(sf::milliseconds(MSEC));
-   }
 }
 
-void insertionSort(std::vector<int> values, sf::RenderWindow& window, SoundGenerator& soundGen){
+void insertionSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen){
    for (size_t i = 1; i < values.size(); i++) // Start with second element of the array
    {
     int key = values[i];
@@ -161,13 +158,125 @@ void insertionSort(std::vector<int> values, sf::RenderWindow& window, SoundGener
     }
     values[j + 1] = key;
    }
-   for (size_t i = 0; i < values.size(); i++)
-   {
-        finishSort(values,window,soundGen,i, i);
-        soundGen.playSoundForValue(values[i]);
-        sf::sleep(sf::milliseconds(MSEC));
-   }
 }
+
+int partition(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen, int low, int high) {
+    int pivot = values[high];
+    int i = low - 1;
+
+    // Highlight pivot element
+    drawBars(window, values, high, -1);
+    sf::sleep(sf::milliseconds(MSEC));
+
+    for (int j = low; j <= high - 1; j++) {
+        // Highlight current element being compared
+        drawBars(window, values, j, high);
+        soundGen.playSoundForValue(values[j]);
+        sf::sleep(sf::milliseconds(MSEC));
+
+        if (values[j] < pivot) {
+            i++;
+            std::swap(values[i], values[j]);
+            // Highlight swapped elements
+            drawBars(window, values, i, j);
+            soundGen.playSoundForValue(values[j]);
+            sf::sleep(sf::milliseconds(MSEC));
+        }
+    }
+    std::swap(values[i + 1], values[high]);
+    drawBars(window, values, i+1, high);
+    soundGen.playSoundForValue(values[high]);
+    sf::sleep(sf::milliseconds(MSEC));
+    return i + 1;
+}
+
+void quick_sort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen, int low, int high) {
+    if (low < high) {
+        // Show current partition range
+        drawBars(window, values, low, high);
+        sf::sleep(sf::milliseconds(MSEC));
+
+        int pivot = partition(values, window, soundGen, low, high);
+        quick_sort(values, window, soundGen, low, pivot - 1);    // Sort left partition
+        quick_sort(values, window, soundGen, pivot + 1, high);   // Sort right partition
+    }
+}
+
+void merge(std::vector<int>& values, sf::RenderWindow& window,SoundGenerator& soundGen, int left, int mid, int right) {
+    int i, j, k;
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+    
+    std::vector<int> leftVal(n1), rightVal(n2);
+    
+    // Copy data to temporary vectors
+    for (i = 0; i < n1; i++)
+        leftVal[i] = values[left + i];
+    for (j = 0; j < n2; j++)
+        rightVal[j] = values[mid + 1 + j];
+    
+    i = 0;
+    j = 0;
+    k = left;
+    
+    while (i < n1 && j < n2) {
+        // Highlight the elements being compared
+        drawBars(window, values, left + i, mid + 1 + j);
+        soundGen.playSoundForValue(values[mid + 1 + j]);
+        sf::sleep(sf::milliseconds(MSEC));
+        
+        if (leftVal[i] <= rightVal[j]) {
+            values[k] = leftVal[i];
+            i++;
+        } else {
+            values[k] = rightVal[j];
+            j++;
+        }
+        k++;
+        
+        // Show the result after each merge step
+        drawBars(window, values, k - 1);
+        soundGen.playSoundForValue(values[k - 1]);
+        sf::sleep(sf::milliseconds(MSEC));
+    }
+    
+    while (i < n1) {
+        values[k] = leftVal[i];
+        // Highlight the remaining elements being copied
+        drawBars(window, values, left + i);
+        soundGen.playSoundForValue(values[left + i]);
+        sf::sleep(sf::milliseconds(MSEC));
+        i++;
+        k++;
+    }
+    
+    while (j < n2) {
+        values[k] = rightVal[j];
+        // Highlight the remaining elements being copied
+        drawBars(window, values, mid + 1 + j);
+        soundGen.playSoundForValue(values[mid + 1 + j]);
+        sf::sleep(sf::milliseconds(MSEC));
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(std::vector<int>& values, sf::RenderWindow& window,SoundGenerator& soundGen, int left, int right) {
+    if (left < right) {
+        int mid = left + (right - left) / 2;
+        
+        // Highlight the current section being sorted
+        drawBars(window, values, left, right);
+        soundGen.playSoundForValue(values[right]);
+        sf::sleep(sf::milliseconds(MSEC));
+        
+        mergeSort(values, window, soundGen, left, mid);
+        mergeSort(values, window, soundGen, mid + 1, right);
+        
+        merge(values, window, soundGen, left, mid, right);
+    }
+}
+
 
 /**
  * @brief Main entry point for the sorting visualization program.
@@ -200,11 +309,25 @@ int main() {
 
     // Run the visualised sorting algorithms
     bubbleSort(values, window, soundGen);
+    finishSort(values, window, soundGen);
+    std::shuffle(values.begin(), values.end(), g);
 
-    // Reset window and create new shuffled values for selection sort
     selectionSort(values, window, soundGen);
+    finishSort(values, window, soundGen);
+    std::shuffle(values.begin(), values.end(), g);
+
 
     insertionSort(values, window, soundGen);
+    finishSort(values, window, soundGen);
+    std::shuffle(values.begin(), values.end(), g);
+
+    quick_sort(values,window, soundGen, 0, values.size() - 1);
+    finishSort(values, window, soundGen);
+    std::shuffle(values.begin(), values.end(), g);
+
+    mergeSort(values,window,soundGen,0, values.size() - 1);
+    finishSort(values, window, soundGen);
+    std::shuffle(values.begin(), values.end(), g);
 
     // Wait until the window is closed
     while (window.isOpen()) {
