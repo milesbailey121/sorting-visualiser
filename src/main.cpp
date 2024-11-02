@@ -7,14 +7,10 @@
 #include <chrono>
 #include <random>
 
-#include <sound_generator.h>
+#include <SoundGenerator.h>
+#include <Constants.h>
 
-const int WINDOW_WIDTH = sf::VideoMode::getDesktopMode().width;
-const int WINDOW_HEIGHT = sf::VideoMode::getDesktopMode().height - 200;
-const int NUM_BARS = 100;
-const int MSEC = 20;
-const int BAR_WIDTH = WINDOW_WIDTH / NUM_BARS;
-
+using namespace Constants;
 
 /**
  * @brief Draws bars representing values on the SFML window.
@@ -101,24 +97,17 @@ void finishSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerat
  * @note This function uses a `bool` flag to detect if no swaps occurred in an iteration,
  *       allowing early exit when the vector is already sorted.
  */
-void bubbleSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen) {
-    bool swapped;
+void bubbleSort(std::vector<int>& values, sf::RenderWindow& window, 
+                SoundGenerator& soundGen) {
+
     for (size_t i = 0; i < values.size(); ++i) {
         for (size_t j = 0; j < values.size() - i - 1; ++j) {
             if (values[j] > values[j + 1]) {
                 std::swap(values[j], values[j + 1]);
                 drawBars(window, values, j, j + 1);
                 soundGen.playSoundForValue(values[j]);
-                swapped = true;
-                
-                // Small delay to make visualization slower
                 sf::sleep(sf::milliseconds(MSEC));
             }
-        }
-        
-        // If no swapping occurred, array is already sorted
-        if (!swapped) {
-            break;
         }
     }
 }
@@ -190,7 +179,7 @@ int partition(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator
     return i + 1;
 }
 
-void quick_sort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen, int low, int high) {
+void quickSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen, int low, int high) {
     if (low < high) {
         // Show current partition range
         drawBars(window, values, low, high);
@@ -277,7 +266,6 @@ void mergeSort(std::vector<int>& values, sf::RenderWindow& window,SoundGenerator
     }
 }
 
-
 /**
  * @brief Main entry point for the sorting visualization program.
  *
@@ -316,12 +304,11 @@ int main() {
     finishSort(values, window, soundGen);
     std::shuffle(values.begin(), values.end(), g);
 
-
     insertionSort(values, window, soundGen);
     finishSort(values, window, soundGen);
     std::shuffle(values.begin(), values.end(), g);
 
-    quick_sort(values,window, soundGen, 0, values.size() - 1);
+    quickSort(values,window, soundGen, 0, values.size() - 1);
     finishSort(values, window, soundGen);
     std::shuffle(values.begin(), values.end(), g);
 

@@ -18,8 +18,11 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(main 
     src/main.cpp
-    src/sound_generator.cpp
-    )
+    src/SoundGenerator.cpp
+)   
+#src/SortingUI.cpp
+#src/SortingAlgorithms.cpp  
+#src/AlgorithmStats.cpp
 target_link_libraries(main PRIVATE sfml-graphics sfml-audio)
 target_compile_features(main PRIVATE cxx_std_17)
 
