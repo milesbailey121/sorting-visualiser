@@ -1,14 +1,11 @@
 #include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Audio.hpp>
 #include <vector>
 #include <iostream>
 #include <algorithm>
-#include <chrono>
 #include <random>
-
-#include <SoundGenerator.h>
+#include <Window/GUI.h>
 #include <Constants.h>
+#include <Sound/SoundGenerator.h>
 
 using namespace Constants;
 
@@ -24,26 +21,22 @@ using namespace Constants;
  * @param highlight2 The index of the second element to highlight (default: -1).
  */
 void drawBars(sf::RenderWindow& window, const std::vector<int>& values, int highlight1 = -1, int highlight2 = -1) {
-    window.clear(sf::Color::Black);
-
     // Find the maximum value in values for height scaling
     int maxValue = *std::max_element(values.begin(), values.end());
     float heightScale = static_cast<float>(WINDOW_HEIGHT) / maxValue;
 
     for (size_t i = 0; i < values.size(); ++i) {
-        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH - 1, values[i] * heightScale)); // Leave a small gap between bars
+        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH - 1, values[i] * heightScale));
         bar.setPosition(i * BAR_WIDTH, WINDOW_HEIGHT - (values[i] * heightScale));
 
         if (i == highlight1 || i == highlight2) {
-            bar.setFillColor(sf::Color::Red);  // Highlight elements being swapped
+            bar.setFillColor(sf::Color::Red);
         } else {
-            bar.setFillColor(sf::Color::White); // Normal bar color
+            bar.setFillColor(sf::Color::White);
         }
 
         window.draw(bar);
     }
-
-    window.display();
 }
 
 /**
@@ -58,20 +51,22 @@ void drawBars(sf::RenderWindow& window, const std::vector<int>& values, int high
  * @param highlight1 The index of the first element to highlight (default: -1).
  * @param highlight2 The index of the second element to highlight (default: -1).
  */
-void finishAnimation(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen,int highlight1 = -1, int highlight2 = -1){
+void finishAnimation(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen, int highlight1 = -1, int highlight2 = -1) {
     int maxValue = *std::max_element(values.begin(), values.end());
     float heightScale = static_cast<float>(WINDOW_HEIGHT) / maxValue;
+    
     for (size_t i = 0; i < values.size(); ++i) {
-        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH - 1, values[i] * heightScale)); // Leave a small gap between bars
+        sf::RectangleShape bar(sf::Vector2f(BAR_WIDTH - 1, values[i] * heightScale));
         bar.setPosition(i * BAR_WIDTH, WINDOW_HEIGHT - (values[i] * heightScale));
-        if (highlight1 >= i){
-            bar.setFillColor(sf::Color::Green);  // Highlight corretly sorted 
+        
+        if (highlight1 >= i) {
+            bar.setFillColor(sf::Color::Green);
         } else {
-            bar.setFillColor(sf::Color::White); // Normal bar color
+            bar.setFillColor(sf::Color::White);
         }
+        
         window.draw(bar);
     }
-    window.display();
 }
 
 void finishSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerator& soundGen){
@@ -186,8 +181,8 @@ void quickSort(std::vector<int>& values, sf::RenderWindow& window, SoundGenerato
         sf::sleep(sf::milliseconds(MSEC));
 
         int pivot = partition(values, window, soundGen, low, high);
-        quick_sort(values, window, soundGen, low, pivot - 1);    // Sort left partition
-        quick_sort(values, window, soundGen, pivot + 1, high);   // Sort right partition
+        quickSort(values, window, soundGen, low, pivot - 1);    // Sort left partition
+        quickSort(values, window, soundGen, pivot + 1, high);   // Sort right partition
     }
 }
 
@@ -266,64 +261,113 @@ void mergeSort(std::vector<int>& values, sf::RenderWindow& window,SoundGenerator
     }
 }
 
-/**
- * @brief Main entry point for the sorting visualization program.
- *
- * Initializes the window, generates a random set of values, and calls a sorting
- * algorithm with real-time visualization and sound playback.
- *
- * @return int Status code, 0 for successful execution.
- */
 int main() {
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Visualised Sorts");
+    
+    // Enable vertical sync to prevent screen tearing
+    window.setVerticalSyncEnabled(true);
+    
+    // Initialize GUI
+    GUI gui;
+    
     // Initialize values with random heights for visualization
     std::vector<int> values(NUM_BARS);
-
-    // Create the window first
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Visualised Sorts");
-
-    // Fill with values from WINDOW_HEIGHT down to 0
     for (int i = 1; i < values.size(); ++i) {
         values[i] = i;
     }
 
-    // Shuffle the values
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(values.begin(), values.end(), g);
 
-    // Initialize sound generator
     SoundGenerator soundGen;
     soundGen.initializeSoundBuffers(WINDOW_HEIGHT);
 
-    // Run the visualised sorting algorithms
-    bubbleSort(values, window, soundGen);
-    finishSort(values, window, soundGen);
-    std::shuffle(values.begin(), values.end(), g);
+    bool isSorting = false;
+    std::string selectedSort = "";
 
-    selectionSort(values, window, soundGen);
-    finishSort(values, window, soundGen);
-    std::shuffle(values.begin(), values.end(), g);
+    // Create a background rectangle
+    sf::RectangleShape background(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+    background.setFillColor(sf::Color::Black);
 
-    insertionSort(values, window, soundGen);
-    finishSort(values, window, soundGen);
-    std::shuffle(values.begin(), values.end(), g);
-
-    quickSort(values,window, soundGen, 0, values.size() - 1);
-    finishSort(values, window, soundGen);
-    std::shuffle(values.begin(), values.end(), g);
-
-    mergeSort(values,window,soundGen,0, values.size() - 1);
-    finishSort(values, window, soundGen);
-    std::shuffle(values.begin(), values.end(), g);
-
-    // Wait until the window is closed
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
+            switch (event.type) {
+                case sf::Event::Closed:
+                    window.close();
+                    break;
+                case sf::Event::KeyPressed:
+                    if (event.key.code == sf::Keyboard::Escape) {
+                        window.close();
+                    }
+                    break;
+                default:
+                    break;
             }
         }
+
+        // Handle radio button selection
+        for (auto& button : gui.getRadioButtons()) {
+            if (button->isPressed(window)) {
+                for (auto& btn : gui.getRadioButtons()) {
+                    btn->deselect();
+                }
+                button->select();
+                selectedSort = button->getText();
+            }
+        }
+
+        // Handle button clicks
+        for (auto& button : gui.getButtons()) {
+            if (button->isPressed()) {
+                if (button->getText() == "Start" && !isSorting && !selectedSort.empty()) {
+                    isSorting = true;
+                    window.clear();
+                    if (selectedSort == "Bubble Sort") {
+                        bubbleSort(values, window, soundGen);
+                        finishSort(values, window, soundGen);
+                    } else if (selectedSort == "Quick Sort") {
+                        quickSort(values, window, soundGen, 0, values.size() - 1);
+                        finishSort(values, window, soundGen);
+                    } else if (selectedSort == "Merge Sort") {
+                        mergeSort(values, window, soundGen, 0, values.size() - 1);
+                        finishSort(values, window, soundGen);
+                    }
+                    isSorting = false;
+                }
+                else if (button->getText() == "Stop") {
+                    isSorting = false;
+                }
+                else if (button->getText() == "Randomise" && !isSorting) {
+                    std::shuffle(values.begin(), values.end(), g);
+                }
+            }
+        }
+
+        // Draw everything
+        window.clear();
+        
+        // Draw background
+        window.draw(background);
+        
+        // Draw bars
+        drawBars(window, values);
+
+        // Draw GUI elements on top
+        for (auto& button : gui.getRadioButtons()) {
+            button->drawTo(window);
+        }
+
+        for (auto& button : gui.getButtons()) {
+            button->drawTo(window);
+            button->logic(window);
+        }
+
+        gui.getSlider().drawTo(window);
+
+        // Single display call per frame
+        window.display();
     }
 
     return 0;

@@ -18,7 +18,11 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(main 
     src/main.cpp
-    src/SoundGenerator.cpp
+    src/Sound/SoundGenerator.cpp
+    src/Window/Assets/Button.cpp
+    src/Window/Assets/Slider.cpp
+    src/Window/Assets/RadioButton.cpp
+    src/Window/GUI.cpp
 )   
 #src/SortingUI.cpp
 #src/SortingAlgorithms.cpp  
