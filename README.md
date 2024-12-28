@@ -52,14 +52,40 @@ A **Sorting Algorithm Visualiser** built in **C++** using **SFML**. This project
    ./bin/main.exe  
    ```  
 
-## File Structure  
+## src File Structure  
 
-- **Algorithms/**: Contains the implementations of sorting algorithms.  
-- **Window/**: Contains code for UI elements such as buttons, sliders, and window management.  
-  - **Assets/**: Includes textures, fonts, and button state configurations.  
-- **Sound/**: (Optional) Placeholder for sound effects.  
-- **SortingState**: Manages the state of the Visualisation, such as sorting steps and indices.  
+### Root Files  
+- **main.cpp**: Entry point of the application.  
+- **Constants.h**: Contains global constants used throughout the project.  
+
+### Directories  
+- **Algorithms/**:  
+  - Contains implementations of sorting algorithms and related utilities.  
+  - Files:  
+    - `Algorithms.cpp`, `Algorithms.h`: Core algorithm implementations.  
+    - `AlgorithmStats.cpp`, `AlgorithmStats.h`: Collect and display statistics (e.g., comparisons, swaps).(Unimplemented)  
+    - `SortingState.cpp`, `SortingState.h`: Manages the state of the sorting process (e.g., indices, steps).  
+
+- **Sound/**:  
+  - Handles sound generation for sorting values.  
+  - Files:  
+    - `SoundGenerator.cpp`, `SoundGenerator.h`: Generates tones based on array values.  
+
+- **Window/**:  
+  - Manages the graphical interface and visualization.  
+  - Files:  
+    - `GUI.cpp`, `GUI.h`: Builds predefined user interface elements.  
+    - `Visualisation.cpp`, `Visualisation.h`: Responsible for rendering the sorting bars and ending animations.  
+    - **Assets/**: Contains resources for the UI.  
+      - `RoundedRectangle.cpp`, `RoundedRectangle.h`: Rounded Rectangle that's used for other UI elements.  
+      - `Button.cpp`, `Button.h`: Button implementation.  
+      - `Slider.cpp`, `Slider.h`: Slider implementation for adjusting array sizing.  
+      - `RadioButton.cpp`, `RadioButton.h`: Radio Button implementation.
+      - `Segoe UI.ttf`: Font used in the UI.   
 
 ## Future Features  
 
 - Add more sorting algorithms (Heap Sort, Radix Sort, etc.).  
+
+
+
