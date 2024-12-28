@@ -1,75 +1,66 @@
-# Sorting Algorithm Visualization in C++
+# Sorting Algorithm Visualiser
 
-This project is a visualization tool for sorting algorithms, using the SFML library to render animations and generate sound effects. It displays sorting processes in real-time, showing bar heights that represent values being sorted, and provides auditory feedback with each comparison and swap.
+A **Sorting Algorithm Visualiser** built in **C++** using **SFML**. This project allows users to Visualise how different sorting algorithms work step-by-step in an interactive and visually appealing interface.  
 
-## Features
+![Alt text](demo.gif)
+## Features  
 
-- **Sorting Algorithms**: Implements Bubble Sort, Selection Sort, and Insertion Sort, each with real-time visualization and auditory feedback.
-- **Dynamic Window Sizing**: Automatically scales to fit 80% of the screen's dimensions.
-- **Data Visualization**: Bars representing values from 0 to 100 are highlighted during swaps, enhancing understanding of each algorithm's inner workings.
-- **Sound Feedback**: Audio tones correlate with bar heights, creating a unique soundscape for each sort.
+- **Visualisation of Sorting Algorithms**  
+  - Bubble Sort  
+  - Insertion Sort  
+  - Selection Sort  
+  - Merge Sort  
+  - Quick Sort  
 
-## Requirements
+- **Interactive User Interface**  
+  - Select sorting algorithms to Visualise.  
+  - Pause, reset, and replay sorting animations.  
+  - Adjust the speed of sorting animations using a slider.  
 
-- **SFML** (Simple and Fast Multimedia Library) for graphics and audio.
-- C++ compiler (e.g., `g++`).
+- **Custom UI Elements**  
+  - Buttons and sliders designed to resemble native Windows UI components.  
 
-### Installing SFML
+## Technologies  
 
-1. Download SFML from [SFML's official website](https://www.sfml-dev.org/download.php).
-2. Follow SFML’s setup guide to link it to your project.
+- **Programming Language**: C++  
+- **Graphics Library**: SFML  
+- **Custom Components**:  
+  - Buttons and sliders with unique textures and states.  
 
-## Setup
+## Installation  
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/username/sorting-visualization.git
-   cd sorting-visualization
-   ```
+### Prerequisites  
+- Install SFML (Simple and Fast Multimedia Library).  
+- Ensure you have a C++ compiler (e.g., MinGW, g++) and CMake installed.  
 
-2. **Compile the code**:
-   ```bash
-   g++ -o sorting_visualization main.cpp -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system
-   ```
+### Steps  
+1. Clone the repository:  
+   ```bash  
+   git clone https://github.com/milesbailey121/sorting-Visualiser.git  
+   cd sorting-Visualiser  
+   ```  
 
-3. **Run the executable**:
-   ```bash
-   ./sorting_visualization
-   ```
+2. Build the project:  
+   ```bash  
+   mkdir build  
+   cd build  
+   cmake ..  
+   cmake --build .  
+   ```  
 
-## Usage
+3. Run the application:  
+   ```bash  
+   ./bin/main.exe  
+   ```  
 
-1. The application opens a window with randomly shuffled bars, representing values from 0 to 100.
-2. Choose a sorting algorithm by uncommenting one of the function calls in `main.cpp`:
-   ```cpp
-   bubbleSort(values, window, soundGen);
-   selectionSort(values, window, soundGen);
-   insertionSort(values, window, soundGen);
-   ```
-3. Close the window by pressing the close button in the window frame.
+## File Structure  
 
-## Code Structure
+- **Algorithms/**: Contains the implementations of sorting algorithms.  
+- **Window/**: Contains code for UI elements such as buttons, sliders, and window management.  
+  - **Assets/**: Includes textures, fonts, and button state configurations.  
+- **Sound/**: (Optional) Placeholder for sound effects.  
+- **SortingState**: Manages the state of the Visualisation, such as sorting steps and indices.  
 
-- **`main.cpp`**: The main application file, which initializes SFML, shuffles values, and runs sorting algorithms.
-- **Sorting Functions**: Each algorithm (Bubble Sort, Selection Sort, Insertion Sort) is implemented with visualization and sound.
-- **`drawBars` Function**: Utility function that renders bars on the SFML window, highlighting the current elements being compared or swapped.
-- **`SoundGenerator` Class**: Custom class to handle sound generation for each value, creating unique tones that match the bar heights.
+## Future Features  
 
-## Customization
-
-- **Adjust Bar Width**: Modify `BAR_WIDTH` to change the width of each bar in pixels.
-- **Adjust Delay**: Modify `MSEC` to increase or decrease the speed of sorting animations.
-- **Add New Algorithms**: Add more sorting functions following the template in `main.cpp`, then call them in `main()`.
-
-## Dependencies
-
-- **SFML** (Simple and Fast Multimedia Library)
-- **C++ STL Libraries**: `<vector>`, `<iostream>`, `<algorithm>`, `<random>`, `<cmath>`, `<chrono>`, `<thread>`
-
-## License
-
-This project is open-source and available under the MIT License.
-
----
-
-Enjoy exploring sorting algorithms with a combination of visuals and sound!
+- Add more sorting algorithms (Heap Sort, Radix Sort, etc.).  
