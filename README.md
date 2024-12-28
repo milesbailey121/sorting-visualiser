@@ -1,6 +1,6 @@
 # Sorting Algorithm Visualiser
 
-A **Sorting Algorithm Visualiser** built in **C++** using **SFML**. This project allows users to Visualise how different sorting algorithms work step-by-step in an interactive and visually appealing interface.  
+A **Sorting Algorithm Visualiser** built in **C++** using **SFML**. This project allows users to visualise how different sorting algorithms work step-by-step in an interactive and visually appealing interface.  
 
 ![Alt text](demo.gif)
 ## Features  
@@ -13,19 +13,18 @@ A **Sorting Algorithm Visualiser** built in **C++** using **SFML**. This project
   - Quick Sort  
 
 - **Interactive User Interface**  
-  - Select sorting algorithms to Visualise.  
+  - Select sorting algorithms to visualise.  
   - Pause, reset, and replay sorting animations.  
-  - Adjust the speed of sorting animations using a slider.  
+  - Adjust the size of sorting arrays using a slider.  
 
-- **Custom UI Elements**  
+- **Custom Elements**  
   - Buttons and sliders designed to resemble native Windows UI components.  
+  - Sound Generator to generate unique sounds based on array values
 
 ## Technologies  
 
 - **Programming Language**: C++  
 - **Graphics Library**: SFML  
-- **Custom Components**:  
-  - Buttons and sliders with unique textures and states.  
 
 ## Installation  
 
