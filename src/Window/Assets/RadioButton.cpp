@@ -5,9 +5,7 @@ RadioButton::RadioButton(std::string t, sf::Vector2f pos, int charSize, bool isS
     // Load font
     if (!font.loadFromFile("../src/Window/Assets/Segoe UI.ttf")) {
         std::cout << "Error loading font\n";
-    } else {
-        std::cout << "Font loaded successfully\n";
-    }
+    } 
 
     // Set up the label text
     text.setString(t);

@@ -32,9 +32,13 @@ void GUI::createRadioButtons() {
         sf::Vector2f(Constants::WINDOW_WIDTH - 320, 250), 18));
     radioButtons.emplace_back(std::make_unique<RadioButton>("Merge Sort",
         sf::Vector2f(Constants::WINDOW_WIDTH - 320, 300), 18));
+    radioButtons.emplace_back(std::make_unique<RadioButton>("Insertion Sort",
+        sf::Vector2f(Constants::WINDOW_WIDTH - 320, 350), 18));
+    radioButtons.emplace_back(std::make_unique<RadioButton>("Selection Sort",
+        sf::Vector2f(Constants::WINDOW_WIDTH - 320, 400), 18));
 }
 
 void GUI::createSlider() {
-    slider.create(0, 10000);
-    slider.setSliderValue(50.0f);
+    slider.create(10, 10000);
+    slider.setSliderValue(100.0f);
 }

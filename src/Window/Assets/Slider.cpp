@@ -42,6 +42,7 @@ void Slider::create(int min, int max)
 
 void Slider::logic(sf::RenderWindow &window)
 {
+	float previousValue = sliderValue;
 	if (slider.getGlobalBounds().contains(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y)
 		&& sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
 	{
@@ -49,6 +50,10 @@ void Slider::logic(sf::RenderWindow &window)
 		{
 			slider.setPosition(sf::Mouse::getPosition(window).x, yCord);
 			sliderValue = (minValue + ((slider.getPosition().x - xCord) / axisWidth * (maxValue - minValue)));
+
+			if (sliderValue != previousValue) {
+                valueChanged = true;
+            }
 		}
 	}
 }
@@ -89,5 +94,5 @@ void Slider::drawTo(sf::RenderWindow &window)
 	window.draw(returnText(xCord + axisWidth - 10, yCord + 5, std::to_string(maxValue), 20));
 	window.draw(slider);
 	window.draw(returnText(slider.getPosition().x - sliderWidth, slider.getPosition().y - sliderHeight,
-		std::to_string((int)sliderValue), 15));
+	std::to_string((int)sliderValue), 15));
 }

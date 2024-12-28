@@ -1,12 +1,13 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <Window/Assets/RoundedRectangle.h>
 #include <iostream>
 
 enum BUTTON_STATE{IDLE = 0, HOVER = 1, PRESSED = 2};
 
 class Button {
 private:
-    sf::RectangleShape button;
+    RoundedRectangle button;
     sf::Text text;
     sf::Font font;
     sf::Color colorIdle;
@@ -20,7 +21,7 @@ public:
     void drawTo(sf::RenderWindow& window);
     void updateTextPosition();
 
-    const sf::RectangleShape& getShape() const { return button; }
+    const RoundedRectangle& getShape() const { return button; }
     std::string getText() {return text.getString();};
 
     bool isMouseOver(sf::RenderWindow& window);

@@ -78,8 +78,12 @@ void Button::drawTo(sf::RenderWindow& window) {
 
 void Button::updateTextPosition() {
     // Center the text horizontally and vertically within the button
+    // Get Local Text bounds
+    sf::FloatRect textBounds = text.getLocalBounds();
+
+    // Center the text within the button
     text.setPosition(
-        button.getPosition().x + (button.getSize().x - text.getGlobalBounds().width) / 2.0f,
-        button.getPosition().y + (button.getSize().y - text.getGlobalBounds().height * 2.5f)
+        button.getPosition().x + (button.getSize().x - textBounds.width) / 2.0f - textBounds.left,
+        button.getPosition().y + (button.getSize().y - textBounds.height) / 2.0f - textBounds.top
     );
 }

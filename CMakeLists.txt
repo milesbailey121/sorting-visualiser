@@ -22,7 +22,10 @@ add_executable(main
     src/Window/Assets/Button.cpp
     src/Window/Assets/Slider.cpp
     src/Window/Assets/RadioButton.cpp
+    src/Window/Visualisation.cpp
     src/Window/GUI.cpp
+    src/Algorithms/Algorithms.cpp
+    src/Algorithms/SortingState.cpp
 )   
 #src/SortingUI.cpp
 #src/SortingAlgorithms.cpp  
