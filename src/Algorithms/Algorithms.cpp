@@ -42,7 +42,6 @@ void SortingAlgorithms::prepareSelectionSort(SortingState& state) {
     }
 }
 
-// Insertion Sort
 void SortingAlgorithms::prepareInsertionSort(SortingState& state) {
     size_t n = state.values.size();
 
@@ -50,23 +49,56 @@ void SortingAlgorithms::prepareInsertionSort(SortingState& state) {
         int key = state.values[i];
         int j = i - 1;
 
+        // Push a step to indicate the start of the current iteration
         state.sortingSteps.push([&state, i]() {
             state.currentIndex = i;
+            state.compareIndex = i - 1;
         });
 
+        // Inner loop: comparing and shifting elements
         while (j >= 0 && state.values[j] > key) {
-            state.sortingSteps.push([&state, j]() {
+            state.sortingSteps.push([&state, i, j]() {
+                state.currentIndex = i;
                 state.compareIndex = j;
-                state.values[j + 1] = state.values[j];
+                state.values[j + 1] = state.values[j]; // Shift value
+                std::cout << "Shifting value at index " << j << " to index " << (j + 1) << std::endl;
             });
             j--;
         }
 
+        // Place the key in its correct position
         state.sortingSteps.push([&state, j, key]() {
             state.values[j + 1] = key;
         });
+
+        if (i == n - 1) {
+            std::cout << "Final iteration: i=" << i << ", key=" << key << std::endl;
+        }
     }
 }
+
+// void SortingAlgorithms::prepareInsertionSort(SortingState& state) {
+//     size_t n = state.values.size();
+
+//     for (size_t i = 1; i < n; i++) {
+//         int key = state.values[i];
+//         int j = i - 1;
+
+ 
+//         while (j >= 0 && state.values[j] > key) {
+//             state.sortingSteps.push([&state,i, j]() {
+//                 state.currentIndex = i;
+//                 state.compareIndex = j;
+//                 state.values[j + 1] = state.values[j];
+//             });
+//             j--;
+//         }
+
+//         state.sortingSteps.push([&state, j, key]() {
+//             state.values[j + 1] = key;
+//         });
+//     }
+// }
 
 void SortingAlgorithms::prepareQuickSort(SortingState& state, int low, int high) {
     if (low < high) {

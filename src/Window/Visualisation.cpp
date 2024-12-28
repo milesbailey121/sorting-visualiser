@@ -66,7 +66,7 @@ void Visualization::finishSort(sf::RenderWindow& window, std::vector<int>& value
         
         
         finishAnimation(window, values, soundGen, i, i + 1); // Highlight the current index
-        soundGen.playSoundForValue(values[i]);
+        soundGen.playSoundForValue(values[i] * 10);
         window.display();
 
         

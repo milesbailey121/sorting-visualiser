@@ -62,6 +62,7 @@ int main() {
             }
 
             if (gui.getSlider().hasChanged()) {
+                state.reset();
                 initializeValues();
                 gui.getSlider().resetChanged(); // Reset the flag after handling
             }
@@ -110,6 +111,7 @@ int main() {
                     state.isSorting = false;
                 }
                 else if (button->getText() == "Randomise" && state.isSorting == false) {
+                    state.reset();
                     initializeValues();
                 }
             }

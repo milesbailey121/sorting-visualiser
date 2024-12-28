@@ -6,7 +6,6 @@ void SortingState::reset() {
     compareIndex = -1;
     while (!sortingSteps.empty()) sortingSteps.pop();
     isSorting = false;
-    currentAlgorithm.clear();
 }
 
 void SortingState::addStep(const std::function<void()>& step) {
